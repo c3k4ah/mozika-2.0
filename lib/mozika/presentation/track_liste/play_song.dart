@@ -4,6 +4,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:palette_generator/palette_generator.dart';
+import 'package:fluentui_icons/fluentui_icons.dart';
 
 import 'package:mozika/mozika/presentation/common/widget/size.dart';
 
@@ -30,8 +31,9 @@ class _TrackListeState extends State<TrackListe> {
   int indexInPlaylist = 0;
   bool isPlaying = false;
   double progressToDouble = 0;
-  String netImg =
-      "https://musique.rfi.fr/sites/default/files/thumbnails/image/denise_0.jpg";
+  String netImg1 =
+      "https://static.qobuz.com/images/covers/ia/ao/c364lt28qaoia_600.jpg";
+  String netImg = "https://i.ytimg.com/vi/jP3nNdT1abY/maxresdefault.jpg";
 
   Color white = Colors.grey;
   Color dark = Colors.black;
@@ -42,6 +44,7 @@ class _TrackListeState extends State<TrackListe> {
     return pourcent;
   }
 
+//https://www.tanaplanete.mg/wp-content/uploads/2021/02/SHYN-carr%C3%A9.jpg
   Duration toDuration(double actuel, Duration total) {
     Duration duration = Duration(milliseconds: actuel.toInt());
 
@@ -181,17 +184,18 @@ class _TrackListeState extends State<TrackListe> {
                                                 /*startAngle orientation, là on en forme U */
                                                 size: _size.width(context) - 40,
                                                 customWidths: CustomSliderWidths(
-                                                  progressBarWidth: 5,
-                                                  trackWidth: 5,
+                                                  progressBarWidth: 2.5,
+                                                  trackWidth: 2.5,
                                                   handlerSize: 8.0,
                                                 ),
                                                 customColors: CustomSliderColors(
                                                   trackColor: Colors.white,
                                                   /*track prog déjà faut sur la bar de progression*/
                                                   progressBarColor:
-                                                      Colors.white12,
+                                                      const Color.fromARGB(
+                                                          255, 207, 206, 206),
                                                   /*progressBar prog restant sur la bar de progression*/
-                                                  dotColor: Colors.grey,
+                                                  dotColor: Colors.white,
                                                   /*dot(anglais)=point ,c'est le point qui indique la progression*/
                                                 )),
                                           );
@@ -242,7 +246,8 @@ class _TrackListeState extends State<TrackListe> {
                                   width: 50,
                                   height: 50,
                                   child: Icon(
-                                    Icons.shuffle,
+                                    FluentSystemIcons
+                                        .ic_fluent_arrow_sort_filled,
                                     color: Colors.white,
                                   ),
                                 ),
@@ -250,7 +255,8 @@ class _TrackListeState extends State<TrackListe> {
                                   width: 50,
                                   height: 50,
                                   child: Icon(
-                                    Icons.skip_previous,
+                                    FluentSystemIcons.ic_fluent_previous_filled,
+                                    size: 30,
                                     color: Colors.white,
                                   ),
                                 ),
@@ -259,13 +265,15 @@ class _TrackListeState extends State<TrackListe> {
                                   height: 70,
                                   child: MaterialButton(
                                     onPressed: () {},
-                                    padding: const EdgeInsets.all(0),
+                                    padding: EdgeInsets.zero,
                                     color: Colors.white,
                                     shape: const CircleBorder(),
-                                    child: const Icon(
-                                      Icons.play_arrow,
-                                      size: 50,
-                                      color: Colors.black,
+                                    child: const Center(
+                                      child: Icon(
+                                        FluentSystemIcons.ic_fluent_play_filled,
+                                        size: 35,
+                                        color: Colors.black,
+                                      ),
                                     ),
                                   ),
                                 ),
@@ -273,7 +281,8 @@ class _TrackListeState extends State<TrackListe> {
                                   width: 50,
                                   height: 50,
                                   child: Icon(
-                                    Icons.skip_next,
+                                    FluentSystemIcons.ic_fluent_next_filled,
+                                    size: 30,
                                     color: Colors.white,
                                   ),
                                 ),
@@ -281,7 +290,8 @@ class _TrackListeState extends State<TrackListe> {
                                   width: 50,
                                   height: 50,
                                   child: Icon(
-                                    Icons.repeat,
+                                    FluentSystemIcons
+                                        .ic_fluent_arrow_repeat_all_filled,
                                     color: Colors.white,
                                   ),
                                 ),

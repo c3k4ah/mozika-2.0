@@ -44,6 +44,7 @@ dependencies:
   rxdart: ^0.27.5
   dashed_circular_progress_bar: ^0.0.4
   palette_generator: ^0.3.3+2
+  fluentui_icons: ^1.0.0
 
 dev_dependencies:
   flutter_test:
