@@ -3,9 +3,9 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:lottie/lottie.dart';
 import 'package:palette_generator/palette_generator.dart';
 import 'package:fluentui_icons/fluentui_icons.dart';
-
 import 'package:mozika/mozika/presentation/common/widget/size.dart';
 
 import 'package:rxdart/rxdart.dart';
@@ -24,6 +24,7 @@ class _TrackListeState extends State<TrackListe> {
   final AudioPlayer _audioPlayer = AudioPlayer();
   final CustomSize _size = CustomSize();
   final Settings _settings = Settings();
+
 //----------------------------------------------------------------
   String currentSongTitle = '';
   String currentSongArtist = '';
@@ -31,9 +32,9 @@ class _TrackListeState extends State<TrackListe> {
   int indexInPlaylist = 0;
   bool isPlaying = false;
   double progressToDouble = 0;
-  String netImg1 =
+  String netImg =
       "https://static.qobuz.com/images/covers/ia/ao/c364lt28qaoia_600.jpg";
-  String netImg = "https://i.ytimg.com/vi/jP3nNdT1abY/maxresdefault.jpg";
+  String netImg1 = "https://i.ytimg.com/vi/jP3nNdT1abY/maxresdefault.jpg";
 
   Color white = Colors.grey;
   Color dark = Colors.black;
@@ -90,6 +91,7 @@ class _TrackListeState extends State<TrackListe> {
         builder:
             (BuildContext context, AsyncSnapshot<PaletteGenerator> snapshot) {
           if (snapshot.hasData) {
+            Color couleurDominant = snapshot.data!.dominantColor!.color;
             return Scaffold(
               backgroundColor: dark,
               body: SizedBox(
@@ -108,11 +110,28 @@ class _TrackListeState extends State<TrackListe> {
                         child: BackdropFilter(
                           filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
                           child: Container(
-                            color: snapshot.data!.dominantColor!.color
-                                .withOpacity(0.6),
+                            color: couleurDominant.withOpacity(0.5),
                           ),
                         ),
                       ),
+                      /**
+                       * Stack(
+                            alignment: AlignmentDirectional.topStart,
+                            children: [
+                              SizedBox(
+                                height: _size.height(context) * .2,
+                                width: _size.width(context),
+                                child: Lottie.asset(
+                                    "assets/animate/animation1.json",
+                                    onLoaded: (p0) {},
+                                    repeat: true),
+                              ),
+                              Container(
+                                color: couleurDominant.withOpacity(0.5),
+                              ),
+                            ],
+                          ),
+                       */
                       Column(
                         children: [
                           Align(
@@ -176,7 +195,37 @@ class _TrackListeState extends State<TrackListe> {
                                             /*onChangeEnd valeur à la fin */
                                             onChangeStart: (value) {},
                                             /* onChangeStart valeur au début */
-                                            innerWidget: (value) => Container(),
+                                            innerWidget: (value) => Transform(
+                                              alignment: Alignment.center,
+                                              transform: Matrix4.rotationY(pi),
+                                              child: SizedBox(
+                                                child: Center(
+                                                  child: Container(
+                                                    width: 80,
+                                                    height: 40,
+                                                    decoration: BoxDecoration(
+                                                      color: Colors.white
+                                                          .withOpacity(.3),
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              40),
+                                                    ),
+                                                    child: Center(
+                                                      child: Text(
+                                                        '$value',
+                                                        style: const TextStyle(
+                                                            color: Colors.black,
+                                                            fontFamily: '',
+                                                            fontSize: 20,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .normal),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
                                             appearance: CircularSliderAppearance(
                                                 angleRange: 180,
                                                 /* angleRange dégré de l'angle*/
@@ -184,8 +233,8 @@ class _TrackListeState extends State<TrackListe> {
                                                 /*startAngle orientation, là on en forme U */
                                                 size: _size.width(context) - 40,
                                                 customWidths: CustomSliderWidths(
-                                                  progressBarWidth: 2.5,
-                                                  trackWidth: 2.5,
+                                                  progressBarWidth: 1.5,
+                                                  trackWidth: 1.5,
                                                   handlerSize: 8.0,
                                                 ),
                                                 customColors: CustomSliderColors(
@@ -212,10 +261,10 @@ class _TrackListeState extends State<TrackListe> {
                             height: 40,
                             child: const Center(
                               child: Text(
-                                '02:31' " / " '03:00',
+                                'Album',
                                 style: TextStyle(
                                     color: Colors.white,
-                                    fontSize: 20,
+                                    fontSize: 25,
                                     fontWeight: FontWeight.normal),
                               ),
                             ),
@@ -224,79 +273,108 @@ class _TrackListeState extends State<TrackListe> {
                           //music title
                           SizedBox(
                             width: _size.width(context),
-                            height: 20,
+                            height: 30,
                             child: const Center(
                               child: Text(
-                                'Music Title',
+                                'Shyn - FFV',
                                 style: TextStyle(
                                     color: Colors.white,
                                     fontSize: 20,
-                                    fontWeight: FontWeight.normal),
+                                    fontWeight: FontWeight.bold),
                               ),
                             ),
                           ),
 
-                          SizedBox(
-                            width: _size.width(context),
-                            height: 150,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                const SizedBox(
-                                  width: 50,
-                                  height: 50,
-                                  child: Icon(
-                                    FluentSystemIcons
-                                        .ic_fluent_arrow_sort_filled,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                                const SizedBox(
-                                  width: 50,
-                                  height: 50,
-                                  child: Icon(
-                                    FluentSystemIcons.ic_fluent_previous_filled,
-                                    size: 30,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                                SizedBox(
-                                  width: 70,
-                                  height: 70,
-                                  child: MaterialButton(
-                                    onPressed: () {},
-                                    padding: EdgeInsets.zero,
-                                    color: Colors.white,
-                                    shape: const CircleBorder(),
-                                    child: const Center(
-                                      child: Icon(
-                                        FluentSystemIcons.ic_fluent_play_filled,
-                                        size: 35,
-                                        color: Colors.black,
+                          Stack(
+                            alignment: AlignmentDirectional.center,
+                            children: [
+                              Container(
+                                width: _size.width(context),
+                                height: 45,
+                                margin: const EdgeInsets.symmetric(
+                                    vertical: 30, horizontal: 10),
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(50),
+                                    color: Colors.white.withOpacity(0.07)),
+                              ),
+                              Container(
+                                width: _size.width(context),
+                                height: 90,
+                                margin: const EdgeInsets.symmetric(
+                                    vertical: 30, horizontal: 10),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    SizedBox(
+                                      width: 50,
+                                      height: 50,
+                                      child: IconButton(
+                                          onPressed: () {},
+                                          icon: const Icon(
+                                            FluentSystemIcons
+                                                .ic_fluent_arrow_sort_filled,
+                                            color: Colors.white,
+                                          )),
+                                    ),
+                                    SizedBox(
+                                      width: 50,
+                                      height: 50,
+                                      child: IconButton(
+                                          onPressed: () {},
+                                          icon: const Icon(
+                                            FluentSystemIcons
+                                                .ic_fluent_previous_filled,
+                                            size: 30,
+                                            color: Colors.white,
+                                          )),
+                                    ),
+                                    SizedBox(
+                                      width: 70,
+                                      height: 70,
+                                      child: MaterialButton(
+                                        onPressed: () {},
+                                        padding: EdgeInsets.zero,
+                                        color: Colors.white,
+                                        shape: const CircleBorder(),
+                                        child: const Center(
+                                          child: Icon(
+                                            FluentSystemIcons
+                                                .ic_fluent_play_filled,
+                                            size: 35,
+                                            color: Colors.black,
+                                          ),
+                                        ),
                                       ),
                                     ),
-                                  ),
+                                    SizedBox(
+                                      width: 50,
+                                      height: 50,
+                                      child: IconButton(
+                                        onPressed: () {},
+                                        icon: const Icon(
+                                          FluentSystemIcons
+                                              .ic_fluent_next_filled,
+                                          size: 30,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      width: 50,
+                                      height: 50,
+                                      child: IconButton(
+                                          onPressed: () {},
+                                          icon: const Icon(
+                                            FluentSystemIcons
+                                                .ic_fluent_arrow_repeat_all_filled,
+                                            color: Colors.white,
+                                          )),
+                                    ),
+                                  ],
                                 ),
-                                const SizedBox(
-                                  width: 50,
-                                  height: 50,
-                                  child: Icon(
-                                    FluentSystemIcons.ic_fluent_next_filled,
-                                    size: 30,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                                const SizedBox(
-                                  width: 50,
-                                  height: 50,
-                                  child: Icon(
-                                    FluentSystemIcons
-                                        .ic_fluent_arrow_repeat_all_filled,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ],
-                            ),
+                              ),
+                            ],
                           )
                         ],
                       ),
@@ -306,7 +384,7 @@ class _TrackListeState extends State<TrackListe> {
               ),
             );
           } else {
-            return Scaffold();
+            return const Scaffold();
           }
         });
   }

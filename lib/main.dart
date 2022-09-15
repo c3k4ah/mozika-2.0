@@ -13,9 +13,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'mozika',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(primarySwatch: Colors.red, fontFamily: "Charming"),
       home: const TrackListe(),
     );
   }
