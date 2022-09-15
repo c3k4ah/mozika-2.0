@@ -47,7 +47,7 @@ class _WidgetOfSongListeState extends State<WidgetOfSongListe> {
             widget.title,
             overflow: TextOverflow.ellipsis,
             maxLines: 1,
-            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
+            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.normal),
           ),
           trailing: Text(
             _utils.intToTimeLeft(widget.duration),
