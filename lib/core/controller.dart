@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:just_audio/just_audio.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 
@@ -9,14 +11,13 @@ class AudioController {
     await _audioQuery.querySongs();
   }
 
-  isPlayingState() {
-    if (_audioPlayer.playing) {
-      _audioPlayer.pause();
-    } else {
-      if (_audioPlayer.currentIndex != null) {
-        _audioPlayer.play();
-      }
-    }
+  isPlayingState() {}
+
+  Future<File> artWork(int id) async {
+    var art = await _audioQuery.queryArtwork(id, ArtworkType.ALBUM);
+    File file = File.fromRawPath(art!);
+
+    return file;
   }
 
   ConcatenatingAudioSource createPlaylist(List<SongModel> songs) {
