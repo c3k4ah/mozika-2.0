@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:just_audio/just_audio.dart';
@@ -6,8 +8,11 @@ import 'package:mozika/mozika/data/data_source/local/settings.dart';
 import 'package:mozika/mozika/presentation/common/widget/size.dart';
 import 'package:mozika/mozika/presentation/track_liste/play_song.dart';
 import 'package:on_audio_query/on_audio_query.dart';
+import 'package:rxdart/rxdart.dart';
+import 'package:sleek_circular_slider/sleek_circular_slider.dart';
 
 import '../../data/data_source/local/data.dart';
+import '../common/utils/utils.dart';
 import '../common/widget/appbar.dart';
 import '../common/widget/song_list_widget.dart';
 
@@ -24,6 +29,7 @@ class _SongListeState extends State<SongListe> {
   final CustomSize _size = CustomSize();
   final Settings _settings = Settings();
   final TemporaryData _data = TemporaryData();
+  final Utils _utils = Utils();
 //-------------------------------------------------------------------------
 
   List<SongModel> songs = [];
@@ -50,17 +56,37 @@ class _SongListeState extends State<SongListe> {
     setState(() {
       if (_data.getSongs.isNotEmpty) {
         currentSongTitle = _data.getSongs[index].title;
-        currentIndex = index;
+        _data.setCurrentIndex = index;
       }
     });
   }
 
+  Stream<DurationState> get _durationStateStream =>
+      Rx.combineLatest2<Duration, Duration?, DurationState>(
+          _audioPlayer.positionStream,
+          _audioPlayer.durationStream,
+          (position, duration) => DurationState(
+              position: position, total: duration ?? Duration.zero));
 //--------------------------------------------------------------------------
   Future<Widget> someOtherName(int id) async {
     return QueryArtworkWidget(
       id: id,
       type: ArtworkType.ALBUM,
     );
+  }
+
+  Duration toDuration(double actuel, Duration total) {
+    Duration duration = Duration(milliseconds: actuel.toInt());
+
+    duration = Duration(milliseconds: (actuel * total.inMilliseconds) ~/ 100);
+
+    return duration;
+  }
+
+  double toPercentage(Duration actuel, Duration total) {
+    double pourcent = 0.0;
+    pourcent = (actuel.inMilliseconds * 100) / total.inMilliseconds;
+    return pourcent;
   }
 
   @override
@@ -127,6 +153,76 @@ class _SongListeState extends State<SongListe> {
                 enBoucle: () {
                   _audioPlayer.setLoopMode(LoopMode.one);
                 },
+                streamSeek: StreamBuilder<DurationState>(
+                  stream: _durationStateStream,
+                  builder: (context, snapshot) {
+                    final durationState = snapshot.data;
+                    final progress = durationState?.position ?? Duration.zero;
+                    final total = durationState?.total ?? Duration.zero;
+
+                    return SleekCircularSlider(
+                      initialValue: toPercentage(progress, total).isNaN
+                          ? 0
+                          : toPercentage(progress, total),
+                      min: 0,
+                      max: 100,
+                      onChange: (value) {
+                        _audioPlayer.seek(toDuration(value, total));
+                      },
+                      /*onChange valeur durant le changement */
+                      onChangeEnd: (value) {},
+                      /*onChangeEnd valeur à la fin */
+                      onChangeStart: (value) {},
+                      /* onChangeStart valeur au début */
+                      innerWidget: (value) => Transform(
+                        alignment: Alignment.center,
+                        transform: Matrix4.rotationY(pi),
+                        child: SizedBox(
+                          child: Center(
+                            child: Container(
+                              width: 80,
+                              height: 40,
+                              decoration: BoxDecoration(
+                                color: Colors.white.withOpacity(.3),
+                                borderRadius: BorderRadius.circular(40),
+                              ),
+                              child: Center(
+                                child: Text(
+                                  _utils.intToTimeLeft(
+                                      toDuration(value, total).inMilliseconds),
+                                  style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.normal),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      appearance: CircularSliderAppearance(
+                          angleRange: 180,
+                          /* angleRange dégré de l'angle*/
+                          startAngle: 0,
+                          /*startAngle orientation, là on en forme U */
+                          size: _size.width(context) - 40,
+                          customWidths: CustomSliderWidths(
+                            progressBarWidth: 1.5,
+                            trackWidth: 1.5,
+                            handlerSize: 8.0,
+                          ),
+                          customColors: CustomSliderColors(
+                            trackColor: Colors.white,
+                            /*track prog déjà faut sur la bar de progression*/
+                            progressBarColor:
+                                const Color.fromARGB(255, 207, 206, 206),
+                            /*progressBar prog restant sur la bar de progression*/
+                            dotColor: Colors.white,
+                            /*dot(anglais)=point ,c'est le point qui indique la progression*/
+                          )),
+                    );
+                  },
+                ),
               );
             }
             return const Scaffold(

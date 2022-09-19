@@ -8,9 +8,6 @@ import 'package:on_audio_query/on_audio_query.dart';
 import 'package:fluentui_icons/fluentui_icons.dart';
 import 'package:mozika/mozika/presentation/common/widget/size.dart';
 
-import 'package:rxdart/rxdart.dart';
-import 'package:sleek_circular_slider/sleek_circular_slider.dart';
-import '../../../core/controller.dart';
 import '../../data/data_source/local/settings.dart';
 
 class TrackListe extends StatefulWidget {
@@ -22,6 +19,7 @@ class TrackListe extends StatefulWidget {
   final VoidCallback prev;
   final VoidCallback enBoucle;
   final VoidCallback aleatoire;
+  final Widget streamSeek;
   const TrackListe(
       {Key? key,
       required this.songIdInSongList,
@@ -31,7 +29,8 @@ class TrackListe extends StatefulWidget {
       required this.next,
       required this.prev,
       required this.enBoucle,
-      required this.aleatoire})
+      required this.aleatoire,
+      required this.streamSeek})
       : super(key: key);
 
   @override
@@ -54,35 +53,12 @@ class _TrackListeState extends State<TrackListe> {
   Color white = Colors.grey;
   Color dark = Colors.black;
 //----------------------------------------------------------------
-  double toPercentage(Duration actuel, Duration total) {
-    double pourcent = 0.0;
-    pourcent = (actuel.inMilliseconds * 100) / total.inMilliseconds;
-    return pourcent;
-  }
-
-//https://www.tanaplanete.mg/wp-content/uploads/2021/02/SHYN-carr%C3%A9.jpg
-  Duration toDuration(double actuel, Duration total) {
-    Duration duration = Duration(milliseconds: actuel.toInt());
-
-    duration = Duration(milliseconds: (actuel * total.inMilliseconds) ~/ 100);
-
-    return duration;
-  }
-
-//changer la couleur selon l'image
 
   //duration state stream
-  Stream<DurationState> get _durationStateStream =>
-      Rx.combineLatest2<Duration, Duration?, DurationState>(
-          _audioPlayer.positionStream,
-          _audioPlayer.durationStream,
-          (position, duration) => DurationState(
-              position: position, total: duration ?? Duration.zero));
 
   @override
   void initState() {
     _settings.requestStoragePermission();
-
     super.initState();
   }
 
@@ -159,84 +135,7 @@ class _TrackListeState extends State<TrackListe> {
                                 margin: const EdgeInsets.symmetric(
                                     horizontal: 15, vertical: 15),
                                 width: _size.width(context),
-                                child: StreamBuilder<DurationState>(
-                                  stream: _durationStateStream,
-                                  builder: (context, snapshot) {
-                                    final durationState = snapshot.data;
-                                    final progress = durationState?.position ??
-                                        Duration.zero;
-                                    final total =
-                                        durationState?.total ?? Duration.zero;
-
-                                    return SleekCircularSlider(
-                                      initialValue:
-                                          toPercentage(progress, total).isNaN
-                                              ? 0
-                                              : toPercentage(progress, total),
-                                      min: 0,
-                                      max: 100,
-                                      onChange: (duration) {
-                                        _audioPlayer
-                                            .seek(toDuration(duration, total));
-                                      },
-                                      /*onChange valeur durant le changement */
-                                      onChangeEnd: (value) {},
-                                      /*onChangeEnd valeur à la fin */
-                                      onChangeStart: (value) {},
-                                      /* onChangeStart valeur au début */
-                                      innerWidget: (value) => Transform(
-                                        alignment: Alignment.center,
-                                        transform: Matrix4.rotationY(pi),
-                                        child: SizedBox(
-                                          child: Center(
-                                            child: Container(
-                                              width: 80,
-                                              height: 40,
-                                              decoration: BoxDecoration(
-                                                color: Colors.white
-                                                    .withOpacity(.3),
-                                                borderRadius:
-                                                    BorderRadius.circular(40),
-                                              ),
-                                              child: Center(
-                                                child: Text(
-                                                  '$value',
-                                                  style: const TextStyle(
-                                                      color: Colors.black,
-                                                      fontFamily: '',
-                                                      fontSize: 20,
-                                                      fontWeight:
-                                                          FontWeight.normal),
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      appearance: CircularSliderAppearance(
-                                          angleRange: 180,
-                                          /* angleRange dégré de l'angle*/
-                                          startAngle: 0,
-                                          /*startAngle orientation, là on en forme U */
-                                          size: _size.width(context) - 40,
-                                          customWidths: CustomSliderWidths(
-                                            progressBarWidth: 1.5,
-                                            trackWidth: 1.5,
-                                            handlerSize: 8.0,
-                                          ),
-                                          customColors: CustomSliderColors(
-                                            trackColor: Colors.white,
-                                            /*track prog déjà faut sur la bar de progression*/
-                                            progressBarColor:
-                                                const Color.fromARGB(
-                                                    255, 207, 206, 206),
-                                            /*progressBar prog restant sur la bar de progression*/
-                                            dotColor: Colors.white,
-                                            /*dot(anglais)=point ,c'est le point qui indique la progression*/
-                                          )),
-                                    );
-                                  },
-                                ),
+                                child: widget.streamSeek,
                               ),
                             ),
                           ],
@@ -337,6 +236,13 @@ class _TrackListeState extends State<TrackListe> {
                                             size: 35,
                                             color: Colors.black,
                                           );
+                                        } else if (!playingState!) {
+                                          const Icon(
+                                            FluentSystemIcons
+                                                .ic_fluent_pause_filled,
+                                            size: 35,
+                                            color: Colors.black,
+                                          );
                                         }
                                         return const Icon(
                                           FluentSystemIcons
@@ -391,52 +297,8 @@ class _TrackListeState extends State<TrackListe> {
     }
   }
 }
-/**
- * FutureBuilder<Uint8List?>(
-      future: OnAudioQuery().queryArtwork(
-        id,
-        type,
-        format: format ?? ArtworkFormat.JPEG,
-        size: size ?? 200,
-        quality: quality ?? 100,
-      ),
-      builder: (context, item) {
-        if (item.data != null && item.data!.isNotEmpty) {
-          return ClipRRect(
-            borderRadius: artworkBorder ?? BorderRadius.circular(50),
-            clipBehavior: artworkClipBehavior ?? Clip.antiAlias,
-            child: Image.memory(
-              item.data!,
-              gaplessPlayback: keepOldArtwork ?? false,
-              repeat: artworkRepeat ?? ImageRepeat.noRepeat,
-              scale: artworkScale ?? 1.0,
-              width: artworkWidth ?? 50,
-              height: artworkHeight ?? 50,
-              fit: artworkFit ?? BoxFit.cover,
-              color: artworkColor,
-              colorBlendMode: artworkBlendMode,
-              filterQuality: artworkQuality ?? FilterQuality.low,
-              frameBuilder: frameBuilder,
-              errorBuilder: errorBuilder ??
-                  (context, exception, stackTrace) {
-                    return nullArtworkWidget ??
-                        const Icon(
-                          Icons.image_not_supported,
-                          size: 50,
-                        );
-                  },
-            ),
-          );
-        }
-        return nullArtworkWidget ??
-            const Icon(
-              Icons.image_not_supported,
-              size: 50,
-            );
-      },
-    )
 
-
-
-    
- */
+class DurationState {
+  DurationState({this.position = Duration.zero, this.total = Duration.zero});
+  Duration position, total;
+}
