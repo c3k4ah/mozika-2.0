@@ -129,11 +129,13 @@ class _SongListeState extends State<SongListe> {
                 songList: _data.getSongs,
                 next: () {
                   if (_audioPlayer.hasNext) {
+                    _data.setCurrentIndex = _data.getCurrentIndex + 1;
                     _audioPlayer.seekToNext();
                   }
                 },
                 prev: () {
                   if (_audioPlayer.hasPrevious) {
+                    _data.setCurrentIndex = _data.getCurrentIndex - 1;
                     _audioPlayer.seekToPrevious();
                   }
                 },
