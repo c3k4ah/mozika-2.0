@@ -12,7 +12,10 @@ class WidgetOfSongListe extends StatefulWidget {
   final String title;
   final int duration;
   final int songIndex;
+  final String album;
+  final String artist;
   final VoidCallback onPressed;
+  final VoidCallback onDoubleTape;
 
   const WidgetOfSongListe(
       {super.key,
@@ -22,7 +25,10 @@ class WidgetOfSongListe extends StatefulWidget {
       required this.title,
       required this.duration,
       required this.songIndex,
-      required this.onPressed});
+      required this.onPressed,
+      required this.album,
+      required this.artist,
+      required this.onDoubleTape});
 
   @override
   State<WidgetOfSongListe> createState() => _WidgetOfSongListeState();
@@ -33,13 +39,98 @@ class _WidgetOfSongListeState extends State<WidgetOfSongListe> {
   final Utils _utils = Utils();
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.symmetric(vertical: 5),
-      height: 50,
-      width: _size.width(context),
-      padding: EdgeInsets.zero,
-      child: Center(
-        child: ListTile(
+    return InkWell(
+      onDoubleTap: widget.onDoubleTape,
+      onTap: widget.onPressed,
+      child: Container(
+        margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 10),
+        height: 80,
+        width: _size.width(context),
+        padding: const EdgeInsets.all(15),
+        decoration: BoxDecoration(
+            color: const Color.fromARGB(255, 32, 32, 32),
+            borderRadius: BorderRadius.circular(15)),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            widget.isPlay
+                ? IconButton(
+                    onPressed: widget.onPressed,
+                    icon: const Icon(
+                      FluentSystemIcons.ic_fluent_pause_filled,
+                      color: Colors.white,
+                    ))
+                : IconButton(
+                    onPressed: widget.onPressed,
+                    icon: const Icon(
+                      FluentSystemIcons.ic_fluent_play_filled,
+                      color: Colors.white,
+                    )) /*SizedBox(
+                    width: 40,
+                    child: Center(
+                      child: Text(
+                        (widget.index + 1).toString(),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                        style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ),*/
+            ,
+            QueryArtworkWidget(
+              id: widget.songIndex,
+              type: ArtworkType.AUDIO,
+              artworkBorder: BorderRadius.circular(15),
+            ),
+            const SizedBox(
+              width: 10,
+            ),
+            SizedBox(
+              width: _size.width(context) * .45,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Text(
+                    widget.title.toString(),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
+                    style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 15,
+                        fontWeight: FontWeight.normal),
+                  ),
+                  Text(
+                    widget.artist,
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
+                    style: const TextStyle(
+                        color: Colors.white38,
+                        fontSize: 10,
+                        fontWeight: FontWeight.normal),
+                  )
+                ],
+              ),
+            ),
+            Text(
+              _utils.intToTimeLeft(widget.duration),
+              style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 10,
+                  fontWeight: FontWeight.w500),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+}
+/**
+  * ListTile(
             leading: QueryArtworkWidget(
               id: widget.songIndex,
               type: ArtworkType.AUDIO,
@@ -60,19 +151,5 @@ class _WidgetOfSongListeState extends State<WidgetOfSongListe> {
                   color: Colors.white,
                   fontSize: 20,
                   fontWeight: FontWeight.w500),
-            )),
-      ),
-    );
-  }
-}
-/**
-  * IconButton(
-              onPressed: widget.onPressed,
-              icon: Icon(
-                widget.isPlay
-                    ? FluentSystemIcons.ic_fluent_pause_filled
-                    : FluentSystemIcons.ic_fluent_play_filled,
-                color: Colors.white30,
-                size: 25,
-              ))
+            ))
  */

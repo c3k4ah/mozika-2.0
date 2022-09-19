@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import 'mozika/presentation/liste/liste_song.dart';
-import 'mozika/presentation/track_liste/play_song.dart';
 
 void main() {
   runApp(const MyApp());
@@ -15,8 +14,12 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'mozika',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(primarySwatch: Colors.red, fontFamily: "Charming"),
-      home: const SongListe(),
+      theme: ThemeData(primarySwatch: Colors.red),
+      initialRoute: '/',
+      routes: {
+        '/': (context) => const SongListe(),
+        //'/playSong': (context) => const TrackListe()
+      },
     );
   }
 }
