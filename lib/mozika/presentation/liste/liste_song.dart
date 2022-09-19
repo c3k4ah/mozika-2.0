@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:fluentui_icons/fluentui_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:just_audio/just_audio.dart';
@@ -121,6 +122,8 @@ class _SongListeState extends State<SongListe> {
           builder: (context, item) {
             if (item.data != null && item.data!.isNotEmpty) {
               return TrackListe(
+                isPlaying: indexInPlaylist == _data.getCurrentIndex &&
+                    _audioPlayer.playing,
                 data: item.data!,
                 songIdInSongList: _data.getCurrentIndex,
                 songList: _data.getSongs,
@@ -153,6 +156,24 @@ class _SongListeState extends State<SongListe> {
                 enBoucle: () {
                   _audioPlayer.setLoopMode(LoopMode.one);
                 },
+                playingState: StreamBuilder<bool>(
+                  stream: _audioPlayer.playingStream,
+                  builder: (context, snapshot) {
+                    bool? playingState = snapshot.data;
+                    if (playingState != null && playingState) {
+                      return const Icon(
+                        FluentSystemIcons.ic_fluent_pause_filled,
+                        size: 35,
+                        color: Colors.black,
+                      );
+                    }
+                    return const Icon(
+                      FluentSystemIcons.ic_fluent_play_filled,
+                      size: 35,
+                      color: Colors.black,
+                    );
+                  },
+                ),
                 streamSeek: StreamBuilder<DurationState>(
                   stream: _durationStateStream,
                   builder: (context, snapshot) {
@@ -180,7 +201,7 @@ class _SongListeState extends State<SongListe> {
                         child: SizedBox(
                           child: Center(
                             child: Container(
-                              width: 80,
+                              width: 100,
                               height: 40,
                               decoration: BoxDecoration(
                                 color: Colors.white.withOpacity(.3),
@@ -192,7 +213,7 @@ class _SongListeState extends State<SongListe> {
                                       toDuration(value, total).inMilliseconds),
                                   style: const TextStyle(
                                       color: Colors.white,
-                                      fontSize: 20,
+                                      fontSize: 18,
                                       fontWeight: FontWeight.normal),
                                 ),
                               ),
@@ -297,7 +318,7 @@ class _SongListeState extends State<SongListe> {
                         },
                         onPressed: () async {
                           _data.setCurrentIndex = index;
-
+                          indexInPlaylist = index;
                           await _audioPlayer.setAudioSource(
                               createPlaylist(item.data!),
                               initialIndex: index);
@@ -311,7 +332,6 @@ class _SongListeState extends State<SongListe> {
                           setState(() {
                             currentSongTitle = song.title;
                             currentSongArtist = item.data![index].artist!;
-                            indexInPlaylist = index;
                             isPlaying = true;
                           });
                         },

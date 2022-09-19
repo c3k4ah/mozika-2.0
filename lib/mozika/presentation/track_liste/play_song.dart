@@ -20,6 +20,8 @@ class TrackListe extends StatefulWidget {
   final VoidCallback enBoucle;
   final VoidCallback aleatoire;
   final Widget streamSeek;
+  final Widget playingState;
+  final bool isPlaying;
   const TrackListe(
       {Key? key,
       required this.songIdInSongList,
@@ -30,7 +32,9 @@ class TrackListe extends StatefulWidget {
       required this.prev,
       required this.enBoucle,
       required this.aleatoire,
-      required this.streamSeek})
+      required this.streamSeek,
+      required this.isPlaying,
+      required this.playingState})
       : super(key: key);
 
   @override
@@ -224,34 +228,7 @@ class _TrackListeState extends State<TrackListe> {
                                   color: Colors.white,
                                   shape: const CircleBorder(),
                                   child: Center(
-                                    child: StreamBuilder<bool>(
-                                      stream: _audioPlayer.playingStream,
-                                      builder: (context, snapshot) {
-                                        bool? playingState = snapshot.data;
-                                        if (playingState != null &&
-                                            playingState) {
-                                          return const Icon(
-                                            FluentSystemIcons
-                                                .ic_fluent_play_filled,
-                                            size: 35,
-                                            color: Colors.black,
-                                          );
-                                        } else if (!playingState!) {
-                                          const Icon(
-                                            FluentSystemIcons
-                                                .ic_fluent_pause_filled,
-                                            size: 35,
-                                            color: Colors.black,
-                                          );
-                                        }
-                                        return const Icon(
-                                          FluentSystemIcons
-                                              .ic_fluent_pause_filled,
-                                          size: 35,
-                                          color: Colors.black,
-                                        );
-                                      },
-                                    ),
+                                    child: widget.playingState,
                                   ),
                                 ),
                               ),
