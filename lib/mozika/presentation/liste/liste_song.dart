@@ -12,6 +12,7 @@ import 'package:on_audio_query/on_audio_query.dart';
 import 'package:palette_generator/palette_generator.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:sleek_circular_slider/sleek_circular_slider.dart';
+import 'package:unicons/unicons.dart';
 
 import '../../data/data_source/local/data.dart';
 import '../common/utils/utils.dart';
@@ -43,7 +44,7 @@ class _SongListeState extends State<SongListe> {
   bool isPlaying = false;
   bool isOnScreen = false;
   double progressToDouble = 0;
-
+  ByteData? imageData;
 //--------------------------------------------------------------------------
   ConcatenatingAudioSource createPlaylist(List<SongModel> songs) {
     List<AudioSource> sources = [];
@@ -109,6 +110,9 @@ class _SongListeState extends State<SongListe> {
         _updateCurrentPlayingSongDetails(index);
       }
     });
+    rootBundle
+        .load('assets/pochette.png')
+        .then((data) => setState(() => imageData = data));
     super.initState();
   }
 
@@ -128,12 +132,15 @@ class _SongListeState extends State<SongListe> {
             ArtworkType.AUDIO,
           ),
           builder: (context, item) {
-            if (item.data != null && item.data!.isNotEmpty) {
+            Uint8List? dataFixe = (item.data == null)
+                ? imageData!.buffer.asUint8List()
+                : item.data!;
+            if (dataFixe != null && dataFixe.isNotEmpty) {
               return TrackListe(
-                updatePalette: _updatePaletteGenerator(item.data!),
+                updatePalette: _updatePaletteGenerator(dataFixe),
                 isPlaying: indexInPlaylist == _data.getCurrentIndex &&
                     _audioPlayer.playing,
-                data: item.data!,
+                data: dataFixe,
                 songIdInSongList: _data.getCurrentIndex,
                 songList: _data.getSongs,
                 next: () {

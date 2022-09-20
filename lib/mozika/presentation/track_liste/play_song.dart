@@ -79,7 +79,7 @@ class _TrackListeState extends State<TrackListe> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.data != null && widget.data.isNotEmpty) {
+    if (widget.data.isNotEmpty) {
       // Color couleurDominant = snapshot.data!.dominantColor!.color;
 
       return Scaffold(
@@ -96,9 +96,11 @@ class _TrackListeState extends State<TrackListe> {
                   decoration: BoxDecoration(
                     image: DecorationImage(
                         fit: BoxFit.cover,
-                        image: Image.memory(
-                          widget.data,
-                        ).image),
+                        image: (widget.data != null)
+                            ? Image.memory(
+                                widget.data,
+                              ).image
+                            : ExactAssetImage('assets/pochette.png')),
                   ),
                   child: BackdropFilter(
                     filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
@@ -135,9 +137,12 @@ class _TrackListeState extends State<TrackListe> {
                                     color: dark,
                                     image: DecorationImage(
                                         fit: BoxFit.cover,
-                                        image: Image.memory(
-                                          widget.data,
-                                        ).image),
+                                        image: (widget.data != null)
+                                            ? Image.memory(
+                                                widget.data,
+                                              ).image
+                                            : const ExactAssetImage(
+                                                'assets/pochette.png')),
                                     borderRadius: BorderRadius.only(
                                         bottomLeft: Radius.circular(
                                             _size.width(context) - 100 / 2),
@@ -160,12 +165,14 @@ class _TrackListeState extends State<TrackListe> {
                       ),
                     ),
                     SizedBox(
-                      width: _size.width(context),
+                      width: _size.width(context) * .8,
                       height: 40,
                       child: Center(
                         child: Text(
                           widget.songList[widget.songIdInSongList].artist
                               .toString(),
+                          maxLines: 1,
+                          overflow: TextOverflow.clip,
                           style: const TextStyle(
                               color: Colors.white,
                               fontSize: 25,
