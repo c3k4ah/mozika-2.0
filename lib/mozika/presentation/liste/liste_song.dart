@@ -9,6 +9,7 @@ import 'package:mozika/mozika/data/data_source/local/settings.dart';
 import 'package:mozika/mozika/presentation/common/widget/size.dart';
 import 'package:mozika/mozika/presentation/track_liste/play_song.dart';
 import 'package:on_audio_query/on_audio_query.dart';
+import 'package:palette_generator/palette_generator.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:sleek_circular_slider/sleek_circular_slider.dart';
 
@@ -60,6 +61,13 @@ class _SongListeState extends State<SongListe> {
         _data.setCurrentIndex = index;
       }
     });
+  }
+
+  Future<PaletteGenerator> _updatePaletteGenerator(Uint8List data) async {
+    var paletteGenerator = await PaletteGenerator.fromImageProvider(
+      Image.memory(data).image,
+    );
+    return paletteGenerator;
   }
 
   Stream<DurationState> get _durationStateStream =>
@@ -122,6 +130,7 @@ class _SongListeState extends State<SongListe> {
           builder: (context, item) {
             if (item.data != null && item.data!.isNotEmpty) {
               return TrackListe(
+                updatePalette: _updatePaletteGenerator(item.data!),
                 isPlaying: indexInPlaylist == _data.getCurrentIndex &&
                     _audioPlayer.playing,
                 data: item.data!,
@@ -206,7 +215,7 @@ class _SongListeState extends State<SongListe> {
                               width: 100,
                               height: 40,
                               decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(.3),
+                                color: Colors.black.withOpacity(.4),
                                 borderRadius: BorderRadius.circular(40),
                               ),
                               child: Center(
@@ -249,7 +258,7 @@ class _SongListeState extends State<SongListe> {
               );
             }
             return const Scaffold(
-              backgroundColor: Colors.white,
+              backgroundColor: Color.fromARGB(255, 26, 25, 25),
               body: Center(
                 child: CircularProgressIndicator(
                   color: Colors.redAccent,

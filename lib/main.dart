@@ -13,7 +13,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'mozika',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(primarySwatch: Colors.red),
+      theme: ThemeData(primarySwatch: Colors.red, fontFamily: 'ProductSans'),
       initialRoute: '/',
       routes: {
         '/': (context) => const SongListe(),

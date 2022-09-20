@@ -7,6 +7,7 @@ import 'package:just_audio/just_audio.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:fluentui_icons/fluentui_icons.dart';
 import 'package:mozika/mozika/presentation/common/widget/size.dart';
+import 'package:palette_generator/palette_generator.dart';
 
 import '../../data/data_source/local/settings.dart';
 
@@ -22,6 +23,7 @@ class TrackListe extends StatefulWidget {
   final Widget streamSeek;
   final Widget playingState;
   final bool isPlaying;
+  final Future<PaletteGenerator> updatePalette;
   const TrackListe(
       {Key? key,
       required this.songIdInSongList,
@@ -34,7 +36,8 @@ class TrackListe extends StatefulWidget {
       required this.aleatoire,
       required this.streamSeek,
       required this.isPlaying,
-      required this.playingState})
+      required this.playingState,
+      required this.updatePalette})
       : super(key: key);
 
   @override
@@ -52,8 +55,9 @@ class _TrackListeState extends State<TrackListe> {
   List<SongModel> songsToPlay = [];
   int indexInPlaylist = 0;
   bool isPlaying = false;
+  bool dataIsNull = false;
   double progressToDouble = 0;
-  Color couleurDominant = Colors.red;
+  Color couleurDominant = Colors.white;
   Color white = Colors.grey;
   Color dark = Colors.black;
 //----------------------------------------------------------------
@@ -98,9 +102,18 @@ class _TrackListeState extends State<TrackListe> {
                   ),
                   child: BackdropFilter(
                     filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
-                    child: Container(
-                      color: couleurDominant.withOpacity(0.5),
-                    ),
+                    child: FutureBuilder<PaletteGenerator>(
+                        future: widget.updatePalette,
+                        builder: (BuildContext context,
+                            AsyncSnapshot<PaletteGenerator> snapshot) {
+                          couleurDominant = snapshot.data!.dominantColor!.color;
+                          return Container(
+                            color: couleurDominant.withOpacity(0.5),
+                          );
+                        }),
+                    /**
+                     * 
+                     */
                   ),
                 ),
                 Column(

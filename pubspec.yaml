@@ -85,12 +85,10 @@ flutter:
     - family: Charming
       fonts:
         - asset: assets/fonts/charming.ttf
-    - family: Cuek
+    - family: ProductSans
       fonts:
-        - asset: assets/fonts/cCuek.ttf
-    - family: Creatogram
-      fonts:
-        - asset: assets/fonts/Creatogram.otf
+        - asset: assets/fonts/PS.ttf
+        - asset: assets/fonts/PSLight.ttf
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
